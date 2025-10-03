@@ -137,6 +137,7 @@ MIT license. Check `LICENSE.md`.
 
 If you find our work helpful, please use the following citations.
 
+For SWE-bench (Verified):
 ```bibtex
 @inproceedings{
     jimenez2024swebench,
@@ -146,7 +147,10 @@ If you find our work helpful, please use the following citations.
     year={2024},
     url={https://openreview.net/forum?id=VTF8yNQM66}
 }
+```
 
+For SWE-bench Multimodal
+```bibtex
 @inproceedings{
     yang2024swebenchmultimodal,
     title={{SWE}-bench Multimodal: Do AI Systems Generalize to Visual Software Domains?},
@@ -154,6 +158,19 @@ If you find our work helpful, please use the following citations.
     booktitle={The Thirteenth International Conference on Learning Representations},
     year={2025},
     url={https://openreview.net/forum?id=riTiq3i21b}
+}
+```
+
+For SWE-bench Multilingual
+```bibtex
+@misc{yang2025swesmith,
+    title={SWE-smith: Scaling Data for Software Engineering Agents},
+    author={John Yang and Kilian Lieret and Carlos E. Jimenez and Alexander Wettig and Kabir Khandpur and Yanzhe Zhang and Binyuan Hui and Ofir Press and Ludwig Schmidt and Diyi Yang},
+    year={2025},
+    eprint={2504.21798},
+    archivePrefix={arXiv},
+    primaryClass={cs.SE},
+    url={https://arxiv.org/abs/2504.21798},
 }
 ```
 
@@ -166,6 +183,8 @@ If you find our work helpful, please use the following citations.
    &nbsp;&nbsp;
   <a href="https://github.com/SWE-agent/SWE-agent"><img src="docs/assets/sweagent_logo_text_below.svg" alt="SWE-agent" height="120px"></a>
    &nbsp;&nbsp;
+  <a href="https://github.com/SWE-agent/Mini-SWE-Agent"><img src="docs/assets/mini_logo_text_below.svg" alt="Mini-SWE-Agent" height="120px"></a>
+  &nbsp;&nbsp;
   <a href="https://github.com/SWE-agent/SWE-ReX"><img src="docs/assets/swerex_logo_text_below.svg" alt="SWE-ReX" height="120px"></a>
    &nbsp;&nbsp;
   <!-- <a href="https://github.com/SWE-bench/SWE-bench"><img src="docs/assets/swebench_logo_text_below.svg" alt="SWE-bench" height="120px"></a> -->
