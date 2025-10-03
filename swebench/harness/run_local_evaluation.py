@@ -4,6 +4,7 @@ import subprocess
 import docker
 import json
 import platform
+import threading
 import traceback
 
 if platform.system() == "Linux":
@@ -11,6 +12,7 @@ if platform.system() == "Linux":
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from pathlib import Path, PurePosixPath
+from tqdm.auto import tqdm
 
 from swebench.harness.constants import (
     APPLY_PATCH_FAIL,
@@ -130,7 +132,7 @@ def run_instance(
     run_id: str,
     timeout: int | None = None,
     rewrite_reports: bool = False,
-):
+) -> dict:
     """
     Run a single instance with the given prediction.
 
@@ -164,9 +166,16 @@ def run_instance(
         # Write report to report.json
         with open(report_path, "w") as f:
             f.write(json.dumps(report, indent=4))
-        return instance_id, report
+        return {
+            "completed": True,
+            "resolved": report[instance_id]["resolved"],
+        }
     if report_path.exists():
-        return instance_id, json.loads(report_path.read_text())
+        report = json.loads(report_path.read_text())
+        return {
+            "completed": True,
+            "resolved": report[instance_id]["resolved"],
+        }
 
     # Set up logger
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -174,6 +183,8 @@ def run_instance(
     logger = setup_logger(instance_id, log_file)
 
     # Run the instance
+    eval_completed = False
+    report = {}
     try:
         # Copy model prediction as patch file to container
         patch_file = Path(log_dir / "patch.diff")
@@ -270,12 +281,8 @@ def run_instance(
         # Write report to report.json
         with open(report_path, "w") as f:
             f.write(json.dumps(report, indent=4))
-        return instance_id, report
-    except EvaluationError as e:
-        error_msg = traceback.format_exc()
-        logger.info(error_msg)
-        print(e)
-    except BuildImageError as e:
+        eval_completed = True
+    except (EvaluationError, BuildImageError) as e:
         error_msg = traceback.format_exc()
         logger.info(error_msg)
         print(e)
@@ -288,7 +295,10 @@ def run_instance(
         logger.error(error_msg)
     finally:
         close_logger(logger)
-    return
+    return {
+        "completed": eval_completed,
+        "resolved": report.get(instance_id, {}).get("resolved", False),
+    }
 
 
 def run_instances(
@@ -358,7 +368,25 @@ def run_instances(
 
     # run instances in parallel
     print(f"Running {len(instances)} instances...")
-    run_threadpool(run_instance, payloads, max_workers)
+    stats = {"✓": 0, "✖": 0, "error": 0}
+    pbar = tqdm(total=len(payloads), desc="Evaluation", postfix=stats)
+    lock = threading.Lock()
+
+    def run_evaluation_with_progress(*args):
+        result = run_instance(*args)
+        with lock:
+            if result["completed"]:
+                if result["resolved"]:
+                    stats["✓"] += 1
+                else:
+                    stats["✖"] += 1
+            else:
+                stats["error"] += 1
+            pbar.set_postfix(stats)
+            pbar.update()
+        return result
+
+    run_threadpool(run_evaluation_with_progress, payloads, max_workers)
     print("All instances run.")
 
 
