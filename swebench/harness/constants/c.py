@@ -2,65 +2,65 @@
 SPECS_REDIS = {
     "13115": {
         "build": ["make distclean", "make"],
-        "test_cmd": ["TERM=dumb ./runtest --durable --single unit/scripting"],
+        "test_cmd": ["TERM=dumb ./runtest --baseport 21111 --durable --single unit/scripting"],
     },
     "12472": {
         "build": ["make distclean", "make"],
         "test_cmd": [
-            'TERM=dumb ./runtest --durable --single unit/acl --only "/.*ACL GETUSER.*"'
+            'TERM=dumb ./runtest --baseport 21112 --durable --single unit/acl --only "/.*ACL GETUSER.*"'
         ],
     },
     "12272": {
         "build": ["make distclean", "make"],
         "test_cmd": [
-            'TERM=dumb ./runtest --durable --single unit/type/string --only "/.*(GETRANGE|SETRANGE).*"'
+            'TERM=dumb ./runtest --baseport 21113 --durable --single unit/type/string --only "/.*(GETRANGE|SETRANGE).*"'
         ],
     },
     "11734": {
         "build": ["make distclean", "make"],
-        "test_cmd": ["TERM=dumb ./runtest --durable --single unit/bitops"],
+        "test_cmd": ["TERM=dumb ./runtest --baseport 21114 --durable --single unit/bitops"],
     },
     "10764": {
         "build": ["make distclean", "make"],
         "test_cmd": [
-            'TERM=dumb ./runtest --durable --single unit/type/zset --only "BZMPOP"'
+            'TERM=dumb ./runtest --baseport 21115 --durable --single unit/type/zset --only "BZMPOP"'
         ],
     },
     "10095": {
         "build": ["make distclean", "make"],
         "test_cmd": [
-            'TERM=dumb ./runtest --durable --single unit/type/list --only "/.*(LPOP|RPOP)"'
+            'TERM=dumb ./runtest --baseport 21116 --durable --single unit/type/list --only "/.*(LPOP|RPOP)"'
         ],
     },
     "9733": {
         "build": ["make distclean", "make"],
-        "test_cmd": ["TERM=dumb ./runtest --durable --single unit/introspection-2"],
+        "test_cmd": ["TERM=dumb ./runtest --baseport 21117 --durable --single unit/introspection-2"],
     },
     "10068": {
         "build": ["make distclean", "make"],
         "test_cmd": [
-            'TERM=dumb ./runtest --durable --single unit/type/stream --only "/*XTRIM*"'
+            'TERM=dumb ./runtest --baseport 21118 --durable --single unit/type/stream --only "/*XTRIM*"'
         ],
     },
     "11631": {
         "build": ["make distclean", "make"],
         "test_cmd": [
-            'TERM=dumb ./runtest --durable --single unit/geo --only "/.*GEOSEARCH .*"'
+            'TERM=dumb ./runtest --baseport 21119 --durable --single unit/geo --only "/.*GEOSEARCH .*"'
         ],
     },
     "11510": {
         "build": ["make distclean", "make"],
         "test_cmd": [
-            'TERM=dumb ./runtest --durable --single unit/introspection --only "/.*MONITOR.*"'
+            'TERM=dumb ./runtest --baseport 21120 --durable --single unit/introspection --only "/.*MONITOR.*"'
         ],
     },
     "11279": {
         "build": ["make distclean", "make"],
-        "test_cmd": ["TERM=dumb ./runtest --durable --single unit/acl"],
+        "test_cmd": ["TERM=dumb ./runtest --baseport 21121 --durable --single unit/acl"],
     },
     "13338": {
         "build": ["make distclean", "make"],
-        "test_cmd": ["TERM=dumb ./runtest --durable --single unit/type/stream-cgroups"],
+        "test_cmd": ["TERM=dumb ./runtest --baseport 21122 --durable --single unit/type/stream-cgroups"],
     },
 }
 
@@ -114,7 +114,7 @@ SPECS_MICROPYTHON = {
         ],
         "test_cmd": [
             "cd tests",
-            "MICROPY_CPYTHON3=python3 MICROPY_MICROPYTHON=../ports/unix/build-standard/micropython ./run-tests.py -i string_format",
+            "MICROPY_CPYTHON3=python3 MICROPY_MICROPYTHON=../ports/unix/build-standard/micropython ./run-tests.py --jobs 1 -i string_format",
         ],
     },
     "13569": {
@@ -126,7 +126,7 @@ SPECS_MICROPYTHON = {
         ],
         "test_cmd": [
             "cd tests",
-            "MICROPY_CPYTHON3=python3 MICROPY_MICROPYTHON=../ports/unix/build-standard/micropython ./run-tests.py -i try",
+            "MICROPY_CPYTHON3=python3 MICROPY_MICROPYTHON=../ports/unix/build-standard/micropython ./run-tests.py --jobs 1 -i try",
         ],
     },
     "13039": {
@@ -138,7 +138,7 @@ SPECS_MICROPYTHON = {
         ],
         "test_cmd": [
             "cd tests",
-            "MICROPY_CPYTHON3=python3 MICROPY_MICROPYTHON=../ports/unix/build-standard/micropython ./run-tests.py -i slice",
+            "MICROPY_CPYTHON3=python3 MICROPY_MICROPYTHON=../ports/unix/build-standard/micropython ./run-tests.py --jobs 1 -i slice",
         ],
     },
     "12158": {
@@ -150,7 +150,7 @@ SPECS_MICROPYTHON = {
         ],
         "test_cmd": [
             "cd tests",
-            "MICROPY_CPYTHON3=python3 MICROPY_MICROPYTHON=../ports/unix/build-standard/micropython ./run-tests.py -d thread",
+            "MICROPY_CPYTHON3=python3 MICROPY_MICROPYTHON=../ports/unix/build-standard/micropython ./run-tests.py --jobs 1 -d thread",
         ],
     },
     "10095": {
@@ -163,7 +163,7 @@ SPECS_MICROPYTHON = {
         "build": ["source ./tools/ci.sh", "ci_unix_build_helper VARIANT=standard"],
         "test_cmd": [
             "cd tests",
-            "MICROPY_CPYTHON3=python3 MICROPY_MICROPYTHON=../ports/unix/build-standard/micropython ./run-tests.py -i basics/fun",
+            "MICROPY_CPYTHON3=python3 MICROPY_MICROPYTHON=../ports/unix/build-standard/micropython ./run-tests.py --jobs 1 -i basics/fun",
         ],
     },
 }
@@ -172,23 +172,23 @@ SPECS_VALKEY = {
     "928": {
         "build": ["make distclean", "make"],
         "test_cmd": [
-            'TERM=dumb ./runtest --durable --single unit/cluster/replica-migration --only "/.*NOREPLICAS.*"'
+            'TERM=dumb ./runtest --baseport 21123 --durable --single unit/cluster/replica-migration --only "/.*NOREPLICAS.*"'
         ],
     },
     "790": {
         "build": ["make distclean", "make"],
         "test_cmd": [
-            "TERM=dumb ./runtest --durable --single unit/cluster/cluster-shards"
+            "TERM=dumb ./runtest --baseport 21124 --durable --single unit/cluster/cluster-shards"
         ],
     },
     "1499": {
         "build": ["make distclean", "make"],
-        "test_cmd": ["TERM=dumb ./runtest --durable --single unit/introspection-2"],
+        "test_cmd": ["TERM=dumb ./runtest --baseport 21125 --durable --single unit/introspection-2"],
     },
     "1842": {
         "build": ["make distclean", "make"],
         "test_cmd": [
-            'TERM=dumb ./runtest --durable --single unit/acl --only "/.*ACL LOAD.*"'
+            'TERM=dumb ./runtest --baseport 21126 --durable --single unit/acl --only "/.*ACL LOAD.*"'
         ],
     },
 }
