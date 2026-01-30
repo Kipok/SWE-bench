@@ -204,6 +204,24 @@ def run_instance(
                 capture_output=True,
             )
             if val.returncode == 0:
+                # Check for reverse patch
+                check_orig = subprocess.run(
+                    f"find {DOCKER_WORKDIR} -name '*.orig' -type f | head -1",
+                    cwd=DOCKER_WORKDIR,
+                    shell=True,
+                    capture_output=True,
+                )
+                if check_orig.stdout.decode(UTF8).strip():
+                    # Restore .orig files:
+                    # find /testbed -name '*.orig' -exec sh -c 'mv "$1" "${1%.orig}"' _ {} \;
+                    restore_val = subprocess.run(
+                        f"find {DOCKER_WORKDIR} -name '*.orig' -exec sh -c 'mv \"$1\" \"${{1%.orig}}\"' _ {{}} \\;",
+                        cwd=DOCKER_WORKDIR,
+                        shell=True,
+                        capture_output=True,
+                    )
+                    if restore_val.returncode == 0:
+                        logger.info("Detected reverse patch, restored files from .orig and treating as already applied")
                 logger.info(f"{APPLY_PATCH_PASS}:\n{val.stdout.decode(UTF8)}")
                 applied_patch = True
                 break
