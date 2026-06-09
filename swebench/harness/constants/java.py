@@ -484,6 +484,61 @@ SPECS_RXJAVA = {
     },
 }
 
+# For repos where tests are run through Maven or Gradle,
+# the standard Maven Central repository often throws 429 errors when attempting to download dependencies,
+# causing evaluations to fail.
+# To avoid this, we configure a mirror for it (provided by Google Cloud Storage) before running tests.
+
+MAVEN_MIRROR_SETUP_CMD = """if [ ! -f ~/.m2/settings.xml ]; then mkdir -p ~/.m2 && echo '
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+          https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <mirrors>
+    <mirror>
+      <id>central</id>
+      <name>Google Cloud Storage mirror of Maven Central</name>
+      <url>https://maven-central.storage-download.googleapis.com/maven2/</url>
+      <mirrorOf>central</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>
+' >~/.m2/settings.xml; fi"""
+
+GRADLE_MIRROR_SETUP_CMD = """mkdir -p ~/.gradle/init.d && echo '
+System.setProperty("org.gradle.internal.repository.max.tentatives", "10")
+def centralMirror = "https://maven-central.storage-download.googleapis.com/maven2/"
+beforeSettings { settings ->
+    settings.pluginManagement.repositories {
+        maven { url centralMirror }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+projectsLoaded {
+    rootProject.allprojects { project ->
+        project.repositories {
+            maven { url centralMirror }
+            mavenCentral()
+            gradlePluginPortal()
+        }
+        project.buildscript.repositories {
+            maven { url centralMirror }
+            mavenCentral()
+            gradlePluginPortal()
+        }
+    }
+}
+' >~/.gradle/init.d/set-up-maven-mirror.gradle"""
+
+for specs in [SPECS_GSON, SPECS_DRUID, SPECS_JAVAPARSER]:
+    for spec in specs.values():
+        spec["test_cmd"] = [MAVEN_MIRROR_SETUP_CMD] + spec["test_cmd"]
+for specs in [SPECS_LUCENE, SPECS_RXJAVA]:
+    for spec in specs.values():
+        spec["test_cmd"] = [GRADLE_MIRROR_SETUP_CMD] + spec["test_cmd"]
+
 MAP_REPO_VERSION_TO_SPECS_JAVA = {
     "google/gson": SPECS_GSON,
     "apache/druid": SPECS_DRUID,
